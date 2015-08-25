@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
 ** All right reserved.
 **
@@ -1020,7 +1020,7 @@ bool Worksheet::addConditionalFormatting(const ConditionalFormatting &cf)
  * Insert an \a image  at the position \a row, \a column
  * Returns true on success.
  */
-bool Worksheet::insertImage(int row, int column, const QImage &image)
+bool Worksheet::insertImage(int row, int column, const QImage &image, const QSize &size)
 {
     Q_D(Worksheet);
 
@@ -1037,8 +1037,12 @@ bool Worksheet::insertImage(int row, int column, const QImage &image)
         12,700 EMUs per point. Therefore, 12,700 * 3 /4 = 9,525 EMUs per
         pixel
     */
+    QSize imageSize = size;
+    if (imageSize.isNull()) {
+        imageSize = image.size();
+    }
     anchor->from = XlsxMarker(row, column, 0, 0);
-    anchor->ext = QSize(image.width() * 9525, image.height() * 9525);
+    anchor->ext = QSize(imageSize.width() * 9525, imageSize.height() * 9525);
 
     anchor->setObjectPicture(image);
     return true;
@@ -1653,6 +1657,13 @@ bool Worksheet::isColumnHidden(int column)
        return columnInfoList.at(0)->hidden;
 
     return false;
+}
+
+int Worksheet::baseColumnWidth() const
+{
+    Q_D(const Worksheet);
+
+    return d->sheetFormatProps.baseColWidth;
 }
 
 /*!
